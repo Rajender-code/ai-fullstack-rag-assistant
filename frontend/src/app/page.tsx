@@ -8,7 +8,8 @@ interface Message {
   sourceDoc?: string | null;
 }
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
