@@ -29,7 +29,7 @@ def get_active_groq_model() -> str:
             if preferred in available:
                 return preferred
         if available:
-            return available[0]
+            return available
     except Exception:
         pass
     return "llama-3.1-8b-instant"
@@ -60,8 +60,9 @@ def chat_stream(request: ChatRequest):
 
     if context:
         system_prompt = (
-            f"You are an AI Document Assistant. Answer the user's question using ONLY the context "
-            f"from the uploaded document '{filename}' below. If the answer is not in the context, say so clearly.\n\n"
+            f"You are an AI Document Assistant. Base your answer primarily on the uploaded document '{filename}' below. "
+            f"If the user asks for analysis, feedback, or improvement suggestions based on the document, provide clear, actionable advice grounded in its contents. "
+            f"If a specific personal fact is missing from the document, state that clearly without inventing details.\n\n"
             f"DOCUMENT CONTEXT:\n{context}"
         )
     else:
@@ -76,7 +77,7 @@ def chat_stream(request: ChatRequest):
                 {"role": "user", "content": request.message},
             ],
         )
-        reply_text = completion.choices[0].message.content
+        reply_text = completion.choices.message.content
         return {
             "reply": reply_text or "No reply returned.",
             "source_doc": filename if context else None,
