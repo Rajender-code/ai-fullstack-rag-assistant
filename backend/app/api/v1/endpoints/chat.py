@@ -28,8 +28,9 @@ def get_active_groq_model() -> str:
         for preferred in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "qwen/qwen3-32b"]:
             if preferred in available:
                 return preferred
-        if available:
-            return available
+        first_model = next(iter(available), None)
+        if first_model:
+            return first_model
     except Exception:
         pass
     return "llama-3.1-8b-instant"
@@ -77,7 +78,8 @@ def chat_stream(request: ChatRequest):
                 {"role": "user", "content": request.message},
             ],
         )
-        reply_text = completion.choices.message.content
+        first_choice = next(iter(completion.choices), None)
+        reply_text = first_choice.message.content if first_choice else ""
         return {
             "reply": reply_text or "No reply returned.",
             "source_doc": filename if context else None,
